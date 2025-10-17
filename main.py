@@ -41,9 +41,10 @@ class Plugin(ETS2LAPlugin):
     GATE_OPENING = 2
     GATE_OPEN = 3
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def imports(self):
+        self.controller = self.modules.SDKController.SCSController()
 
+    def init(self):
         self._selected_gate: Optional[Gate] = None
         self._selected_gate_uid: Optional[str] = None
         self._last_gate_state: Optional[int] = None
@@ -54,10 +55,6 @@ class Plugin(ETS2LAPlugin):
 
         self._current_phase: str = "idle"
 
-    def imports(self):
-        self.controller = self.modules.SDKController.SCSController()
-
-    def init(self):
         self.STOP_OFFSET_METERS = max(1.0, min(1.5, float(self.STOP_OFFSET_METERS)))
 
     def _get_truck_forward_vector(self, api: dict) -> Tuple[float, float]:
