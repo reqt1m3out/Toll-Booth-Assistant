@@ -12,7 +12,7 @@ import time
 class Plugin(ETS2LAPlugin):
     description = PluginDescription(
         name=_("Toll Booth Assistant"),
-        version="1.0.0",
+        version="1.1.0",
         description=_("Tries detect toll booths on route and automatically pass them."),
         dependencies=["AdaptiveCruiseControl", "Map", "AR"],
         modules=["TruckSimAPI", "SDKController", "Semaphores"],
