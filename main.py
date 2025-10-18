@@ -61,7 +61,7 @@ class Plugin(ETS2LAPlugin):
         rotation = api["truckPlacement"]["rotationX"] * 360.0
         if rotation < 0:
             rotation += 360.0
-        
+
         radians = math.radians(rotation)
         return -math.sin(radians), -math.cos(radians)
 
@@ -73,7 +73,7 @@ class Plugin(ETS2LAPlugin):
         )
 
     def _calculate_distance_2d(self, point_a: Tuple[float, float],
-                                point_b: Tuple[float, float]) -> float:
+                               point_b: Tuple[float, float]) -> float:
         dx = point_a[0] - point_b[0]
         dz = point_a[1] - point_b[1]
         return math.sqrt(dx * dx + dz * dz)
@@ -120,8 +120,8 @@ class Plugin(ETS2LAPlugin):
 
     def _find_gate_on_route(self, api: dict, route: List[Tuple[float, float, float]],
                             gates: List[Gate]) -> Tuple[Optional[Gate], Optional[float],
-                                                        Optional[Tuple[float, float, float]],
-                                                        Optional[Tuple[float, float]]]:
+    Optional[Tuple[float, float, float]],
+    Optional[Tuple[float, float]]]:
 
         truck_x = api["truckPlacement"]["coordinateX"]
         truck_z = api["truckPlacement"]["coordinateZ"]
@@ -143,8 +143,8 @@ class Plugin(ETS2LAPlugin):
 
             to_gate_vector = (gate_x - truck_x, gate_z - truck_z)
             forward_distance = (
-                to_gate_vector[0] * forward_vector[0] +
-                to_gate_vector[1] * forward_vector[1]
+                    to_gate_vector[0] * forward_vector[0] +
+                    to_gate_vector[1] * forward_vector[1]
             )
 
             if forward_distance <= 0:
@@ -167,11 +167,11 @@ class Plugin(ETS2LAPlugin):
 
             current_score = route_distance * 3.0 + forward_distance
             best_score = (best_projection and
-                         self._calculate_distance_2d(
-                             (best_gate.position.x + 512.0 * best_gate.cx,
-                              best_gate.position.z + 512.0 * best_gate.cy),
-                             (best_projection[0], best_projection[2])
-                         ) * 3.0 + best_forward_distance) if best_gate else float("inf")
+                          self._calculate_distance_2d(
+                              (best_gate.position.x + 512.0 * best_gate.cx,
+                               best_gate.position.z + 512.0 * best_gate.cy),
+                              (best_projection[0], best_projection[2])
+                          ) * 3.0 + best_forward_distance) if best_gate else float("inf")
 
             if current_score < best_score:
                 best_gate = gate
@@ -326,7 +326,7 @@ class Plugin(ETS2LAPlugin):
         current_time = time.perf_counter()
         self._update_activation_state(current_time)
 
-        if not gate:
+        if not gate or gate.state not in (self.GATE_CLOSING, self.GATE_CLOSED):
             self._reset_state()
             return
 
@@ -346,10 +346,10 @@ class Plugin(ETS2LAPlugin):
 
         current_speed = api["truckFloat"]["speed"]
         is_stopped = current_speed < self.STOPPED_SPEED_THRESHOLD
-        is_close_to_gate = forward_distance < 6.0
+        is_close_to_gate = forward_distance < 8.0
         gate_ready = (
-            gate.state in (self.GATE_OPENING, self.GATE_OPEN) or
-            api.get("specialBool", {}).get("tollgate", False)
+                gate.state in (self.GATE_OPENING, self.GATE_OPEN) or
+                api.get("specialBool", {}).get("tollgate", False)
         )
 
         if self._current_phase == "passing":
